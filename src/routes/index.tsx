@@ -54,7 +54,7 @@ function Index() {
         .from("user_roles")
         .select("user_id")
         .eq("role", "profesor");
-
+console.log("ROLES PROFESOR:", roles, "ERROR:", rolesError);
       if (rolesError) {
         console.error("Error cargando profesores:", rolesError);
         setLoading(false);
