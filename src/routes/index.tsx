@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { BarChart3, Code2, ChefHat, Languages, Guitar, Plus } from "lucide-react";
 
 import heroTeacher from "@/assets/hero-teacher.jpg";
 import teacherDiego from "@/assets/teacher-diego.jpg";
@@ -29,12 +30,12 @@ export const Route = createFileRoute("/")({
 });
 
 const categories = [
-  { icon: "📊", name: "Hoja de cálculo", count: "214 profesores" },
-  { icon: "⌨️", name: "Programación", count: "388 profesores" },
-  { icon: "🍳", name: "Cocina", count: "152 profesores" },
-  { icon: "🗣️", name: "Idiomas", count: "640 profesores" },
-  { icon: "🎸", name: "Música", count: "198 profesores" },
-  { icon: "＋", name: "Ver más", count: "12 áreas" },
+  { icon: BarChart3, name: "Hoja de cálculo", count: "214 profesores" },
+  { icon: Code2, name: "Programación", count: "388 profesores" },
+  { icon: ChefHat, name: "Cocina", count: "152 profesores" },
+  { icon: Languages, name: "Idiomas", count: "640 profesores" },
+  { icon: Guitar, name: "Música", count: "198 profesores" },
+  { icon: Plus, name: "Ver más", count: "12 áreas" },
 ];
 
 const teachers = [
@@ -173,7 +174,9 @@ function Index() {
                 className="group animate-rise rounded-2xl border border-line bg-surface p-4 transition-colors hover:border-accent/40"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
-                <div className="size-10 rounded-xl bg-soft text-lg">{cat.icon}</div>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-soft text-ink/70">
+                  <cat.icon className="size-5" strokeWidth={1.8} />
+                </div>
                 <p className="mt-3 text-sm font-semibold">{cat.name}</p>
                 <p className="text-xs text-muted-foreground">{cat.count}</p>
               </div>
