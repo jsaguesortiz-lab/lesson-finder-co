@@ -1,14 +1,18 @@
-# Welcome to your Lovable project
+# Learn Together
+
+buenas tardes, quiero crear una web, que ofrezca clases de algo en particular, de algún a actividad, ya sea cocinar, o enseñar a usar excel, Python, etc necesito que me organices la app por categorías con el propósito de conectar a profesores y clientes, es decir, la web seria un intermediario
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://lesson-finder-co.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/3aaca572-3f19-5de0-8119-3096390d7fa6).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +24,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
