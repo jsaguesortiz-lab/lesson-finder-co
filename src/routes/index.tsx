@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { BarChart3, Code2, ChefHat, Languages, Guitar, Plus } from "lucide-react";
-
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import heroTeacher from "@/assets/hero-teacher.jpg";
 import teacherDiego from "@/assets/teacher-diego.jpg";
 import teacherLucia from "@/assets/teacher-lucia.jpg";
@@ -39,36 +40,64 @@ const categories = [
   { icon: Plus, name: "Ver más", count: "12 áreas" },
 ];
 
-const teachers = [
-  {
-    photo: teacherLucia,
-    tag: "Excel avanzado",
-    name: "Lucía Ferrer",
-    rating: "4.9",
-    bio: "Ex analista financiera · Madrid",
-    price: "22 €",
-  },
-  {
-    photo: teacherMarc,
-    tag: "Python desde cero",
-    name: "Marc Vidal",
-    rating: "5.0",
-    bio: "Ingeniero · Barcelona",
-    price: "28 €",
-  },
-  {
-    photo: teacherCarmen,
-    tag: "Cocina casera",
-    name: "Carmen Ríos",
-    rating: "4.8",
-    bio: "Chef particular · Sevilla",
-    price: "19 €",
-  },
-];
 
 const chips = ["Excel", "Python", "Cocina", "Idiomas", "Música", "+12"];
 
 function Index() {
+   const [search, setSearch] = useState("");
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadTeachers() {
+      const { data: roles, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "profesor");
+
+      if (rolesError) {
+        console.error("Error cargando profesores:", rolesError);
+        setLoading(false);
+        return;
+      }
+
+      const teacherIds = roles?.map((role) => role.user_id) ?? [];
+
+      if (teacherIds.length === 0) {
+        setTeachers([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("id", teacherIds);
+
+      if (profilesError) {
+        console.error("Error cargando perfiles:", profilesError);
+      } else {
+        setTeachers(profiles ?? []);
+      }
+
+      setLoading(false);
+    }
+
+    loadTeachers();
+  }, []);
+
+  const filteredTeachers = teachers.filter((teacher) => {
+    const query = search.toLowerCase().trim();
+
+    if (!query) return true;
+
+    return (
+      teacher.subject?.toLowerCase().includes(query) ||
+      teacher.full_name?.toLowerCase().includes(query) ||
+      teacher.city?.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="min-h-screen bg-paper text-ink antialiased">
       <SiteHeader />
@@ -89,14 +118,23 @@ function Index() {
             <div className="animate-rise mt-7 rounded-2xl border border-line bg-surface p-2 ring-1 ring-black/5" style={{ animationDelay: "240ms" }}>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <label className="flex flex-1 items-center gap-2 rounded-xl px-3 py-3 text-sm text-muted-foreground">
-                  <span className="text-base">⌕</span>
-                  <span className="font-normal">¿Qué quieres aprender?</span>
-                </label>
+  <span className="text-base">⌕</span>
+  <input
+    type="text"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    placeholder="¿Qué quieres aprender?"
+    className="w-full bg-transparent text-ink outline-none placeholder:text-muted-foreground"
+  />
+</label>
                 <label className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm text-muted-foreground sm:w-40">
                   <span>Todas</span>
                   <span className="ml-auto text-xs">▾</span>
                 </label>
-                <button className="rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-ink">
+                <button
+  onClick={() => {
+    document.getElementById("profesores")?.scrollIntoView({ behavior: "smooth" });
+  }} className="rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-ink">
                   Buscar
                 </button>
               </div>
@@ -180,30 +218,30 @@ function Index() {
             </a>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {teachers.map((t, i) => (
+            {filteredTeachers.map((t, i) => (
               <article
-                key={t.name}
+                key={t.id}
                 className="group animate-rise overflow-hidden rounded-[18px] border border-line bg-surface ring-1 ring-black/5"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-soft">
-                  <img src={t.photo} alt={t.name} width={1024} height={768} loading="lazy" className="h-full w-full object-cover" />
+                  <img src={t.avatar_url || heroTeacher} alt={t.full_name} width={1024} height={768} loading="lazy" className="h-full w-full object-cover" />
                   <span className="absolute left-3 top-3 rounded-full bg-surface/90 px-2.5 py-1 text-[11px] font-semibold text-ink">
-                    {t.tag}
+                    {t.subject || "Profesor"}
                   </span>
                 </div>
                 <div className="p-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-display text-lg font-semibold">{t.name}</h3>
+                    <h3 className="font-display text-lg font-semibold">{t.full_name}</h3>
                     <span className="flex items-center gap-1 rounded-full bg-soft px-2 py-0.5 text-xs font-semibold">
                       <span className="text-star">★</span>
-                      {t.rating}
+                      Nuevo
                     </span>
                   </div>
                   <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{t.bio}</p>
                   <div className="mt-4 flex items-center justify-between border-t border-line/70 pt-3">
                     <p className="text-sm text-muted-foreground">
-                      <span className="font-display text-lg font-bold text-ink">{t.price}</span>/hora
+                      <span className="font-display text-lg font-bold text-ink">{t.hourly_price ? `${t.hourly_price} €` : "Consultar"}</span>/hora
                     </p>
                     <button className="rounded-full bg-ink px-4 py-1.5 text-sm font-semibold text-paper transition-colors group-hover:bg-accent">
                       Reservar
