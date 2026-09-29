@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { SiteHeader } from "@/components/SiteHeader";
 import { BarChart3, Code2, ChefHat, Languages, Guitar, Plus } from "lucide-react";
 
 import heroTeacher from "@/assets/hero-teacher.jpg";
@@ -70,27 +71,7 @@ const chips = ["Excel", "Python", "Cocina", "Idiomas", "Música", "+12"];
 function Index() {
   return (
     <div className="min-h-screen bg-paper text-ink antialiased">
-      <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/85 backdrop-blur-sm">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-          <a href="#" className="flex items-baseline gap-1">
-            <span className="font-display text-[22px] font-bold tracking-tight">Cátedra</span>
-            <span className="font-serif text-xl italic text-accent">.</span>
-          </a>
-          <nav className="hidden items-center gap-8 text-sm font-medium text-ink/70 md:flex">
-            <a href="#categorias" className="transition-colors hover:text-ink">Categorías</a>
-            <a href="#profesores" className="transition-colors hover:text-ink">Profesores</a>
-            <a href="#como" className="transition-colors hover:text-ink">Cómo funciona</a>
-          </nav>
-          <div className="flex items-center gap-2">
-            <a href="#" className="hidden text-sm font-medium text-ink/70 transition-colors hover:text-ink sm:block">
-              Iniciar sesión
-            </a>
-            <a href="#" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-paper transition-colors hover:bg-black">
-              Únete
-            </a>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       <section className="relative overflow-hidden">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-12 md:grid-cols-[1.05fr_.95fr] md:py-16">
