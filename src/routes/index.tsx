@@ -280,9 +280,9 @@ function Index() {
                   </p>
                 </li>
               </ol>
-              <a href="#" className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-paper transition-colors hover:text-accent">
+              <Link to="/auth" search={{ modo: "registro", rol: "profesor" }} className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-paper transition-colors hover:text-accent">
                 Únete como profesor →
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -298,12 +298,13 @@ function Index() {
               Únete a la comunidad de Cátedra y convierte tu conocimiento en ingresos, en tus propios horarios, sin comisiones ocultas.
             </p>
           </div>
-          <a
-            href="#"
+          <Link
+            to="/auth"
+            search={{ modo: "registro", rol: "profesor" }}
             className="group inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-4 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-ink"
           >
             Registrarme como profesor <span className="transition-transform group-hover:translate-x-1">→</span>
-          </a>
+          </Link>
         </div>
       </section>
 
