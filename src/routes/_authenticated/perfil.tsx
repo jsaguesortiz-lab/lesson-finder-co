@@ -83,7 +83,7 @@ const [availability, setAvailability] = useState<
     setMsg(error ? "No se pudo guardar." : "¡Guardado!");
   }
 async function addAvailability(
-  day: number,
+  date: string,
   start: string,
   end: string
 ) {
@@ -95,14 +95,14 @@ async function addAvailability(
   const { data, error } = await supabase
     .from("teacher_availability")
     .insert({
-      teacher_id: user.id,
-      day_of_week: day,
-      start_time: start,
-      end_time: end,
-    })
-    .select("id, day_of_week, start_time, end_time")
-    .single();
-
+      
+  teacher_id: user.id,
+  lesson_date: date,
+  start_time: start,
+  end_time: end,
+})
+.select("id, lesson_date, start_time, end_time")
+.single();
   if (error) {
     setMsg("No se pudo guardar el horario.");
     return;
@@ -169,16 +169,8 @@ async function addAvailability(
   </p>
 
   <div className="mt-4 grid gap-3 sm:grid-cols-3">
-    <select id="availability-day" className={input} defaultValue="1">
-      <option value="1">Lunes</option>
-      <option value="2">Martes</option>
-      <option value="3">Miércoles</option>
-      <option value="4">Jueves</option>
-      <option value="5">Viernes</option>
-      <option value="6">Sábado</option>
-      <option value="0">Domingo</option>
-    </select>
 
+<input id="availability-date" type="date" className={input} />
     <input id="availability-start" type="time" className={input} />
     <input id="availability-end" type="time" className={input} />
   </div>
@@ -187,11 +179,11 @@ async function addAvailability(
   type="button"
   className="mt-3 rounded-xl border border-line px-4 py-2 text-sm font-semibold"
   onClick={() => {
-    const day = document.getElementById("availability-day") as HTMLSelectElement;
+    const date = document.getElementById("availability-date") as HTMLInputElement;
     const start = document.getElementById("availability-start") as HTMLInputElement;
     const end = document.getElementById("availability-end") as HTMLInputElement;
 
-    addAvailability(Number(day.value), start.value, end.value);
+    addAvailability(date.value, start.value, end.value);
   }}
 >
   Añadir horario
