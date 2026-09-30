@@ -392,6 +392,7 @@ async function openTeacher(teacher: any) {
             <button
               key={slot.id}
               type="button"
+              onClick={() => alert("Horario seleccionado")}
               className="w-full rounded-xl border border-line px-4 py-3 text-left text-sm font-semibold hover:border-accent"
             >
               {["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][slot.day_of_week]} · {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
