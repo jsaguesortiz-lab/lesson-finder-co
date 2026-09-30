@@ -243,7 +243,7 @@ console.log("ROLES PROFESOR:", roles, "ERROR:", rolesError);
                     <p className="text-sm text-muted-foreground">
                       <span className="font-display text-lg font-bold text-ink">{t.hourly_price ? `${t.hourly_price} €` : "Consultar"}</span>/hora
                     </p>
-                    <button className="rounded-full bg-ink px-4 py-1.5 text-sm font-semibold text-paper transition-colors group-hover:bg-accent">
+                    <button onClick={() => alert(`Has seleccionado a ${t.full_name}`)} className="rounded-full bg-ink px-4 py-1.5 text-sm font-semibold text-paper transition-colors group-hover:bg-accent">
                       Reservar
                     </button>
                   </div>
