@@ -110,6 +110,20 @@ async function addAvailability(
 
   setAvailability((prev) => [...prev, data]);
   setMsg("Horario añadido correctamente.");
+} async function deleteAvailability(id: string) {
+  const { error } = await supabase
+    .from("teacher_availability")
+    .delete()
+    .eq("id", id)
+    .eq("teacher_id", user.id);
+
+  if (error) {
+    setMsg("No se pudo eliminar el horario.");
+    return;
+  }
+
+  setAvailability((prev) => prev.filter((slot) => slot.id !== id));
+  setMsg("Horario eliminado.");
 }
   const set = (k: keyof Profile) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setP((prev) => (prev ? { ...prev, [k]: k === "hourly_price" ? (e.target.value ? Number(e.target.value) : null) : e.target.value } : prev));
@@ -182,6 +196,27 @@ async function addAvailability(
 >
   Añadir horario
 </button>
+</div> <div className="mt-4 space-y-2">
+  {availability.map((slot: any) => (
+    <div
+      key={slot.id}
+      className="flex items-center justify-between rounded-xl border border-line px-4 py-3"
+    >
+      <span className="text-sm">
+        {["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][slot.day_of_week]}
+        {" · "}
+        {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
+      </span>
+
+      <button
+        type="button"
+        onClick={() => deleteAvailability(slot.id)}
+        className="text-sm font-semibold text-red-600"
+      >
+        Eliminar
+      </button>
+    </div>
+  ))}
 </div>
               </>
             )}
