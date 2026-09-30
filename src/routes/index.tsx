@@ -47,6 +47,8 @@ function Index() {
    const [search, setSearch] = useState("");
   const [teachers, setTeachers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
+const [teacherAvailability, setTeacherAvailability] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadTeachers() {
@@ -85,7 +87,24 @@ console.log("ROLES PROFESOR:", roles, "ERROR:", rolesError);
 
     loadTeachers();
   }, []);
+async function openTeacher(teacher: any) {
+  setSelectedTeacher(teacher);
 
+  const { data, error } = await supabase
+    .from("teacher_availability")
+    .select("id, day_of_week, start_time, end_time")
+    .eq("teacher_id", teacher.id)
+    .order("day_of_week")
+    .order("start_time");
+
+  if (error) {
+    console.error("Error cargando disponibilidad:", error);
+    setTeacherAvailability([]);
+    return;
+  }
+
+  setTeacherAvailability(data ?? []);
+}
   const filteredTeachers = teachers.filter((teacher) => {
     const query = search.toLowerCase().trim();
 
@@ -243,7 +262,7 @@ console.log("ROLES PROFESOR:", roles, "ERROR:", rolesError);
                     <p className="text-sm text-muted-foreground">
                       <span className="font-display text-lg font-bold text-ink">{t.hourly_price ? `${t.hourly_price} €` : "Consultar"}</span>/hora
                     </p>
-                    <button onClick={() => alert(`Has seleccionado a ${t.full_name}`)} className="rounded-full bg-ink px-4 py-1.5 text-sm font-semibold text-paper transition-colors group-hover:bg-accent">
+                    <button onClick={() => openTeacher(t)} className="rounded-full bg-ink px-4 py-1.5 text-sm font-semibold text-paper transition-colors group-hover:bg-accent">
                       Reservar
                     </button>
                   </div>
@@ -345,7 +364,44 @@ console.log("ROLES PROFESOR:", roles, "ERROR:", rolesError);
           </Link>
         </div>
       </section>
+{selectedTeacher && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div className="w-full max-w-md rounded-2xl bg-paper p-6 shadow-xl">
+      <div className="flex items-center justify-between">
+        <h2 className="font-display text-2xl font-bold">
+          Reservar con {selectedTeacher.full_name}
+        </h2>
+        <button
+          type="button"
+          onClick={() => setSelectedTeacher(null)}
+          className="text-sm text-muted-foreground"
+        >
+          Cerrar
+        </button>
+      </div>
 
+      <p className="mt-2 text-sm text-muted-foreground">
+        Elige uno de los horarios disponibles:
+      </p>
+
+      <div className="mt-5 space-y-2">
+        {teacherAvailability.length === 0 ? (
+          <p className="text-sm">Este profesor todavía no tiene horarios disponibles.</p>
+        ) : (
+          teacherAvailability.map((slot: any) => (
+            <button
+              key={slot.id}
+              type="button"
+              className="w-full rounded-xl border border-line px-4 py-3 text-left text-sm font-semibold hover:border-accent"
+            >
+              {["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][slot.day_of_week]} · {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
+            </button>
+          ))
+        )}
+      </div>
+    </div>
+  </div>
+)}
       <footer className="border-t border-line/70 bg-surface/40">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-8 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-baseline gap-1">
