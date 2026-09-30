@@ -36,7 +36,9 @@ function PerfilPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-
+const [availability, setAvailability] = useState<
+  { id?: string; day_of_week: number; start_time: string; end_time: string }[]
+>([]);
   useEffect(() => {
     (async () => {
       const [{ data: prof }, { data: roles }] = await Promise.all([
@@ -44,7 +46,18 @@ function PerfilPage() {
         supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
       setP(prof ?? { full_name: "", avatar_url: null, city: null, phone: null, subject: null, hourly_price: null, bio: null });
-      if (roles?.some((r) => r.role === "profesor")) setRole("profesor");
+      if (roles?.some((r) => r.role === "profesor")) {
+  setRole("profesor");
+
+  const { data: availabilityData } = await supabase
+    .from("teacher_availability")
+    .select("id, day_of_week, start_time, end_time")
+    .eq("teacher_id", user.id)
+    .order("day_of_week")
+    .order("start_time");
+
+  setAvailability(availabilityData ?? []);
+}
       if (prof?.avatar_url) {
         const { data } = await supabase.storage.from("avatars").createSignedUrl(prof.avatar_url, 3600);
         setPhoto(data?.signedUrl ?? null);
@@ -69,7 +82,35 @@ function PerfilPage() {
     setSaving(false);
     setMsg(error ? "No se pudo guardar." : "¡Guardado!");
   }
+async function addAvailability(
+  day: number,
+  start: string,
+  end: string
+) {
+  if (!start || !end || start >= end) {
+    setMsg("Comprueba las horas seleccionadas.");
+    return;
+  }
 
+  const { data, error } = await supabase
+    .from("teacher_availability")
+    .insert({
+      teacher_id: user.id,
+      day_of_week: day,
+      start_time: start,
+      end_time: end,
+    })
+    .select("id, day_of_week, start_time, end_time")
+    .single();
+
+  if (error) {
+    setMsg("No se pudo guardar el horario.");
+    return;
+  }
+
+  setAvailability((prev) => [...prev, data]);
+  setMsg("Horario añadido correctamente.");
+}
   const set = (k: keyof Profile) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setP((prev) => (prev ? { ...prev, [k]: k === "hourly_price" ? (e.target.value ? Number(e.target.value) : null) : e.target.value } : prev));
 
@@ -107,6 +148,41 @@ function PerfilPage() {
                   <label className="block text-sm font-medium">Precio por hora (€)<input type="number" min={0} step="0.5" value={p.hourly_price ?? ""} onChange={set("hourly_price")} className={input} /></label>
                 </div>
                 <label className="block text-sm font-medium">Sobre ti<textarea rows={4} value={p.bio ?? ""} onChange={set("bio")} className={input} /></label>
+                <div className="mt-6 border-t border-line pt-5">
+  <h2 className="font-display text-lg font-bold">Mi disponibilidad</h2>
+  <p className="mt-1 text-sm text-muted-foreground">
+    Añade los días y horas en los que puedes dar clase.
+  </p>
+
+  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+    <select id="availability-day" className={input} defaultValue="1">
+      <option value="1">Lunes</option>
+      <option value="2">Martes</option>
+      <option value="3">Miércoles</option>
+      <option value="4">Jueves</option>
+      <option value="5">Viernes</option>
+      <option value="6">Sábado</option>
+      <option value="0">Domingo</option>
+    </select>
+
+    <input id="availability-start" type="time" className={input} />
+    <input id="availability-end" type="time" className={input} />
+  </div>
+
+ <button
+  type="button"
+  className="mt-3 rounded-xl border border-line px-4 py-2 text-sm font-semibold"
+  onClick={() => {
+    const day = document.getElementById("availability-day") as HTMLSelectElement;
+    const start = document.getElementById("availability-start") as HTMLInputElement;
+    const end = document.getElementById("availability-end") as HTMLInputElement;
+
+    addAvailability(Number(day.value), start.value, end.value);
+  }}
+>
+  Añadir horario
+</button>
+</div>
               </>
             )}
             <div className="flex items-center gap-3">
