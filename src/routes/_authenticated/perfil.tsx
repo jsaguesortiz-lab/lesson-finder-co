@@ -38,7 +38,8 @@ function PerfilPage() {
   const [msg, setMsg] = useState<string | null>(null);
 const [availability, setAvailability] = useState<
   { id?: string; day_of_week: number; start_time: string; end_time: string }[]
->([]);
+>([]); 
+  const [bookings, setBookings] = useState<any[]>([]);
   useEffect(() => {
     (async () => {
       const [{ data: prof }, { data: roles }] = await Promise.all([
@@ -57,6 +58,15 @@ const [availability, setAvailability] = useState<
     .order("start_time");
 
   setAvailability(availabilityData ?? []);
+        const { data: bookingsData } = await supabase
+  .from("bookings")
+  .select("*")
+  .eq("teacher_id", user.id)
+  .eq("status", "confirmed")
+  .order("lesson_date", { ascending: true })
+  .order("start_time", { ascending: true });
+
+setBookings(bookingsData ?? []);
 }
       if (prof?.avatar_url) {
         const { data } = await supabase.storage.from("avatars").createSignedUrl(prof.avatar_url, 3600);
@@ -209,7 +219,38 @@ async function addAvailability(
       </button>
     </div>
   ))}
-</div>
+</div> 
+                {role === "profesor" && (
+  <div className="mt-6 border-t border-line pt-5">
+    <h2 className="font-display text-lg font-bold">Próximas reservas</h2>
+
+    {bookings.length === 0 ? (
+      <p className="mt-2 text-sm text-muted-foreground">
+        Todavía no tienes reservas.
+      </p>
+    ) : (
+      <div className="mt-4 space-y-2">
+        {bookings.map((booking: any) => (
+          <div
+            key={booking.id}
+            className="rounded-xl border border-line px-4 py-3"
+          >
+            <p className="text-sm font-semibold">
+              {new Date(`${booking.lesson_date}T00:00:00`).toLocaleDateString("es-ES", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              })}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {booking.start_time.slice(0, 5)} - {booking.end_time.slice(0, 5)}
+            </p>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
               </>
             )}
             <div className="flex items-center gap-3">
