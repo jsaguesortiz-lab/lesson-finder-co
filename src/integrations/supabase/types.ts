@@ -14,6 +14,64 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          availability_id: string | null
+          created_at: string
+          end_time: string
+          id: string
+          lesson_date: string
+          start_time: string
+          status: string
+          student_id: string
+          teacher_id: string
+        }
+        Insert: {
+          availability_id?: string | null
+          created_at?: string
+          end_time: string
+          id?: string
+          lesson_date: string
+          start_time: string
+          status?: string
+          student_id: string
+          teacher_id: string
+        }
+        Update: {
+          availability_id?: string | null
+          created_at?: string
+          end_time?: string
+          id?: string
+          lesson_date?: string
+          start_time?: string
+          status?: string
+          student_id?: string
+          teacher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_availability_id_fkey"
+            columns: ["availability_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_availability"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -52,6 +110,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      teacher_availability: {
+        Row: {
+          created_at: string
+          day_of_week: number | null
+          end_time: string
+          id: string
+          lesson_date: string | null
+          start_time: string
+          teacher_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week?: number | null
+          end_time: string
+          id?: string
+          lesson_date?: string | null
+          start_time: string
+          teacher_id: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number | null
+          end_time?: string
+          id?: string
+          lesson_date?: string | null
+          start_time?: string
+          teacher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_availability_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
