@@ -224,7 +224,7 @@ async function addAvailability(
     </div>
   ))}
 </div> 
-                {role === "profesor" && (
+                {(
   <div className="mt-6 border-t border-line pt-5">
     <h2 className="font-display text-lg font-bold">Próximas reservas</h2>
 
