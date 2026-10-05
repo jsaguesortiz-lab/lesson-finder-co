@@ -49,7 +49,7 @@ function Index() {
   const [loading, setLoading] = useState(true);
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
 const [teacherAvailability, setTeacherAvailability] = useState<any[]>([]);
-
+const [bookedSlots, setBookedSlots] = useState<any[]>([]);
   async function handleBooking(slot: any) {
   const {
     data: { user },
@@ -79,7 +79,15 @@ const [teacherAvailability, setTeacherAvailability] = useState<any[]>([]);
     alert("No se pudo realizar la reserva.");
     return;
   }
-
+setBookedSlots((prev) => [
+  ...prev,
+  {
+    availability_id: slot.id,
+    lesson_date: slot.lesson_date,
+    start_time: slot.start_time,
+    end_time: slot.end_time,
+  },
+]);
   alert("¡Reserva realizada!");
 }
   useEffect(() => {
@@ -136,6 +144,13 @@ async function openTeacher(teacher: any) {
   }
 
   setTeacherAvailability(data ?? []);
+  const { data: bookedData } = await supabase
+  .from("bookings")
+  .select("availability_id, lesson_date, start_time, end_time")
+  .eq("teacher_id", teacher.id)
+  .eq("status", "confirmed");
+
+setBookedSlots(bookedData ?? []);
 } 
   function generateHourlySlots(slot: any) {
   const slots = [];
@@ -451,6 +466,12 @@ async function openTeacher(teacher: any) {
         ) : (
           teacherAvailability.flatMap((availability: any) =>
   generateHourlySlots(availability)
+).filter((slot: any) =>
+  !bookedSlots.some(
+    (booking: any) =>
+      booking.availability_id === slot.id &&
+      booking.start_time.slice(0, 5) === slot.start_time.slice(0, 5)
+  )
 ).map((slot: any) => (
             <button
               key={`${slot.id}-${slot.start_time}`}
