@@ -31,6 +31,7 @@ const input = "mt-1 w-full rounded-xl border border-line bg-paper px-3 py-2.5 te
 
 function PerfilPage() {
   const { user } = Route.useRouteContext();
+  console.log("USUARIO ACTUAL:", user.id);
   const [p, setP] = useState<Profile | null>(null);
   const [role, setRole] = useState<string>("alumno");
   const [photo, setPhoto] = useState<string | null>(null);
