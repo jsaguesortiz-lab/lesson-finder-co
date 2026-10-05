@@ -61,7 +61,7 @@ const [availability, setAvailability] = useState<
         const { data: bookingsData } = await supabase
   .from("bookings")
   .select("*")
-  .eq("teacher_id", user.id)
+  .eq(roles?.some((r) => r.role === "profesor") ? "teacher_id" : "student_id", user.id)
   .eq("status", "confirmed")
   .order("lesson_date", { ascending: true })
   .order("start_time", { ascending: true });
