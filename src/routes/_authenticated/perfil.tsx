@@ -224,7 +224,9 @@ async function addAvailability(
 </div> 
                 
   <div className="mt-6 border-t border-line pt-5">
-    <h2 className="font-display text-lg font-bold">Próximas reservas</h2>
+    <h2 className="font-display text-lg font-bold">
+  {role === "profesor" ? "Próximas reservas" : "Mis reservas"}
+</h2>
 
     {bookings.length === 0 ? (
       <p className="mt-2 text-sm text-muted-foreground">
