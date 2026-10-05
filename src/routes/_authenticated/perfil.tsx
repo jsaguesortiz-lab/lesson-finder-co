@@ -57,6 +57,7 @@ const [availability, setAvailability] = useState<any[]>([]);
     .order("start_time");
 
   setAvailability(availabilityData ?? []);
+        }
         const { data: bookingsData, error: bookingsError } = await supabase
   .from("bookings")
   .select("*")
@@ -66,7 +67,6 @@ const [availability, setAvailability] = useState<any[]>([]);
   .order("start_time", { ascending: true });
 console.log("BOOKINGS DEBUG:", bookingsData, bookingsError, user.id);
 setBookings(bookingsData ?? []);
-}
       if (prof?.avatar_url) {
         const { data } = await supabase.storage.from("avatars").createSignedUrl(prof.avatar_url, 3600);
         setPhoto(data?.signedUrl ?? null);
