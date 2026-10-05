@@ -124,11 +124,11 @@ async function openTeacher(teacher: any) {
 
   const { data, error } = await supabase
     .from("teacher_availability")
-    .select("id, day_of_week, start_time, end_time")
+    .select("id, lesson_date, start_time, end_time")
     .eq("teacher_id", teacher.id)
-    .order("day_of_week")
-    .order("start_time");
-
+    .not("lesson_date", "is", null)
+.order("lesson_date", { ascending: true })
+.order("start_time", { ascending: true });
   if (error) {
     console.error("Error cargando disponibilidad:", error);
     setTeacherAvailability([]);
@@ -427,7 +427,11 @@ async function openTeacher(teacher: any) {
               onClick={() => handleBooking(slot)}
               className="w-full rounded-xl border border-line px-4 py-3 text-left text-sm font-semibold hover:border-accent"
             >
-              {["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][slot.day_of_week]} · {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
+              {new Date(`${slot.lesson_date}T00:00:00`).toLocaleDateString("es-ES", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+})} · {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
             </button>
           ))
         )}
