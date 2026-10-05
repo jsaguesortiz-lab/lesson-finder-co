@@ -50,6 +50,38 @@ function Index() {
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
 const [teacherAvailability, setTeacherAvailability] = useState<any[]>([]);
 
+  async function handleBooking(slot: any) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    alert("Inicia sesión para reservar.");
+    return;
+  }
+
+  if (!selectedTeacher) {
+    alert("No se ha seleccionado profesor.");
+    return;
+  }
+
+  const { error } = await supabase.from("bookings").insert({
+    student_id: user.id,
+    teacher_id: selectedTeacher.id,
+    availability_id: slot.id,
+    lesson_date: slot.lesson_date,
+    start_time: slot.start_time,
+    end_time: slot.end_time,
+  });
+
+  if (error) {
+    console.error(error);
+    alert("No se pudo realizar la reserva.");
+    return;
+  }
+
+  alert("¡Reserva realizada!");
+}
   useEffect(() => {
     async function loadTeachers() {
       const { data: roles, error: rolesError } = await supabase
@@ -392,7 +424,7 @@ async function openTeacher(teacher: any) {
             <button
               key={slot.id}
               type="button"
-              onClick={() => alert("Horario seleccionado")}
+              onClick={() => handleBooking(slot)}
               className="w-full rounded-xl border border-line px-4 py-3 text-left text-sm font-semibold hover:border-accent"
             >
               {["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][slot.day_of_week]} · {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
