@@ -205,8 +205,12 @@ async function addAvailability(
       className="flex items-center justify-between rounded-xl border border-line px-4 py-3"
     >
       <span className="text-sm">
-        {["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][slot.day_of_week]}
-        {" · "}
+       {new Date(`${slot.lesson_date}T00:00:00`).toLocaleDateString("es-ES", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+})}
+{" · "}
         {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
       </span>
 
