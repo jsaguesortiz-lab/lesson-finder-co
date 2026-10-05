@@ -136,6 +136,35 @@ async function openTeacher(teacher: any) {
   }
 
   setTeacherAvailability(data ?? []);
+} 
+  function generateHourlySlots(slot: any) {
+  const slots = [];
+
+  const [startHour, startMinute] = slot.start_time.split(":").map(Number);
+  const [endHour, endMinute] = slot.end_time.split(":").map(Number);
+
+  let current = startHour * 60 + startMinute;
+  const end = endHour * 60 + endMinute;
+
+  while (current + 60 <= end) {
+    const next = current + 60;
+
+    const formatTime = (minutes: number) => {
+      const h = Math.floor(minutes / 60);
+      const m = minutes % 60;
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    };
+
+    slots.push({
+      ...slot,
+      start_time: formatTime(current),
+      end_time: formatTime(next),
+    });
+
+    current = next;
+  }
+
+  return slots;
 }
   const filteredTeachers = teachers.filter((teacher) => {
     const query = search.toLowerCase().trim();
@@ -420,9 +449,11 @@ async function openTeacher(teacher: any) {
         {teacherAvailability.length === 0 ? (
           <p className="text-sm">Este profesor todavía no tiene horarios disponibles.</p>
         ) : (
-          teacherAvailability.map((slot: any) => (
+          teacherAvailability.flatMap((availability: any) =>
+  generateHourlySlots(availability)
+).map((slot: any) => (
             <button
-              key={slot.id}
+              key={`${slot.id}-${slot.start_time}`}
               type="button"
               onClick={() => handleBooking(slot)}
               className="w-full rounded-xl border border-line px-4 py-3 text-left text-sm font-semibold hover:border-accent"
