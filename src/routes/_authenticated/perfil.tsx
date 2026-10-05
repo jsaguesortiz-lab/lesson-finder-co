@@ -57,14 +57,14 @@ const [availability, setAvailability] = useState<any[]>([]);
     .order("start_time");
 
   setAvailability(availabilityData ?? []);
-        const { data: bookingsData } = await supabase
+        const { data: bookingsData, error: bookingsError } = await supabase
   .from("bookings")
   .select("*")
   .eq(roles?.some((r) => r.role === "profesor") ? "teacher_id" : "student_id", user.id)
   .eq("status", "confirmed")
   .order("lesson_date", { ascending: true })
   .order("start_time", { ascending: true });
-
+console.log("BOOKINGS DEBUG:", bookingsData, bookingsError, user.id);
 setBookings(bookingsData ?? []);
 }
       if (prof?.avatar_url) {
