@@ -36,9 +36,7 @@ function PerfilPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-const [availability, setAvailability] = useState<
-  { id?: string; day_of_week: number; start_time: string; end_time: string }[]
->([]); 
+const [availability, setAvailability] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   useEffect(() => {
     (async () => {
