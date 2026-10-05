@@ -49,12 +49,13 @@ const [availability, setAvailability] = useState<any[]>([]);
       if (roles?.some((r) => r.role === "profesor")) {
   setRole("profesor");
 
-  const { data: availabilityData } = await supabase
-    .from("teacher_availability")
-    .select("id, day_of_week, start_time, end_time")
-    .eq("teacher_id", user.id)
-    .order("day_of_week")
-    .order("start_time");
+ const { data: availabilityData } = await supabase
+  .from("teacher_availability")
+  .select("id, lesson_date, start_time, end_time")
+  .eq("teacher_id", user.id)
+  .not("lesson_date", "is", null)
+  .order("lesson_date", { ascending: true })
+  .order("start_time", { ascending: true });
 
   setAvailability(availabilityData ?? []);
         }
